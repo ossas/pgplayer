@@ -1,27 +1,52 @@
-let renderer, stage;
+let _renderer, _stage;
+const resizeComponent = [];
 
 class PixiHelper {
   constructor(view) {
+    _renderer = PIXI.autoDetectRenderer(256, 256, { backgroundColor: 0xffffff });
+    _renderer.autoResize = true;
+    _renderer.resize(window.innerWidth, window.innerHeight);
+    resizeComponent.push(_renderer);
+    view.appendChild(_renderer.view);
 
-    renderer = PIXI.autoDetectRenderer(256, 256, { backgroundColor: 0xffffff });
-    renderer.autoResize = true;
-    renderer.resize(window.innerWidth, window.innerHeight);
-    view.appendChild(renderer.view);
-
-    stage = new PIXI.Container();
+    _stage = new PIXI.Container();
 
     // bind
     this.animate = this.animate.bind(this);
+
+    if(window) {
+      window.onresize = this.handleResizeWindow
+    }
+  }
+
+  handleResizeWindow() {
+    console.log(window.innerHeight, window.innerWidth);
+    resizeComponent.forEach((component) => {
+      if('resize' in component) {
+        component.resize(window.innerWidth, window.innerHeight);
+      } else {
+        component.width = window.innerWidth;
+        component.height = window.innerHeight;
+      }
+    });
+  }
+
+  get renderer() {
+    return _renderer;
   }
 
   addChild(child) {
-    stage.addChild(child);
+    _stage.addChild(child);
+  }
+
+  addResizeItem(item) {
+    resizeComponent.push(item);
   }
 
   animate() {
-    if (stage) {
+    if (_stage) {
       requestAnimationFrame(this.animate);
-      renderer.render(stage);
+      _renderer.render(_stage);
     }
   }
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Pixi from './components/common/Pixi';
+import Pixi from './components/Pixi';
 
 export default class App extends Component {
   render() {
